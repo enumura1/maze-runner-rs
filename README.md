@@ -36,8 +36,8 @@ fn main() {
     // Display the maze
     println!("{}", maze.get_maze_as_string());
 
-    // Try to move the player
-    let moved = maze.try_move("d"); // Move right
+    // Try to move the player, Move right
+    let moved = maze.try_move("d");
     
     // Check if the game is completed
     let state = maze.get_state();
