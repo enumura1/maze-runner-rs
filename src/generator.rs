@@ -3,44 +3,58 @@ use rand::seq::SliceRandom;
 use crate::maze::{WALL, PATH, WIDTH, HEIGHT};
 use crate::position::Position;
 
-// 迷路生成のための穴掘り
-pub fn dig_maze(grid: &mut [[char; WIDTH]; HEIGHT],
-    start_x: usize, start_y: usize, rng: &mut impl Rng) {
-
-    // 開始位置を通路にする
+/// Generates a maze using the recursive backtracking algorithm (digging method).
+/// 
+/// # Arguments
+/// * `grid` - The grid to dig the maze in
+/// * `start_x` - The starting X coordinate
+/// * `start_y` - The starting Y coordinate
+/// * `rng` - Random number generator
+pub fn dig_maze(grid: &mut [[char; WIDTH]; HEIGHT], 
+                start_x: usize, start_y: usize, 
+                rng: &mut impl Rng) {
+    // Mark starting position as a path
     grid[start_y][start_x] = PATH;
     
-    // 掘る方向をランダムに決める
+    // Choose random directions to dig
     let directions = [(0, -2), (2, 0), (0, 2), (-2, 0)];
-    // 可変長に変換
     let mut shuffled_directions = directions.to_vec();
-    // 配列の要素の順番をシャッフル
     shuffled_directions.shuffle(rng);
     
-    // 各方向に掘っていく
+    // Dig in each direction
     for (dx, dy) in shuffled_directions {
         let nx = start_x as isize + dx;
         let ny = start_y as isize + dy;
         
-        // 範囲内かつ掘れる場所かチェック
+        // Check if within bounds and can dig
         if nx > 0 && nx < WIDTH as isize - 1 && ny > 0 && ny < HEIGHT as isize - 1 
             && grid[ny as usize][nx as usize] == WALL {
-            // 間の壁も掘る
+            // Dig through the wall between positions
             grid[(start_y as isize + dy / 2) as usize][(start_x as isize + dx / 2) as usize] = PATH;
-            // 再帰的に掘り進める
+            // Continue digging recursively
             dig_maze(grid, nx as usize, ny as usize, rng);
         }
     }
 }
 
-// 通路の位置を見つける補助関数（左上から探索）
-pub fn find_path_position(grid: &[[char; WIDTH]; HEIGHT], start_x: usize, start_y: usize) -> Option<Position> {
-    // （1,1）が通路なら、その位置を返す
+/// Finds a path position from the top-left of the maze.
+/// 
+/// # Arguments
+/// * `grid` - The maze grid
+/// * `start_x` - The starting X coordinate to check
+/// * `start_y` - The starting Y coordinate to check
+/// 
+/// # Returns
+/// * `Some(Position)` - The found path position
+/// * `None` - If no path position was found
+pub fn find_path_position(grid: &[[char; WIDTH]; HEIGHT], 
+    start_x: usize, start_y: usize) -> Option<Position> {
+    // If the specified position is a path, return it
     if grid[start_y][start_x] == PATH {
         return Some(Position::new(start_x, start_y));
     }
     
-    // 通路を探す（左上から右下に）
+    // Search for a path from top-left to bottom-right
     for y in 0..HEIGHT {
         for x in 0..WIDTH {
             if grid[y][x] == PATH {
@@ -49,23 +63,33 @@ pub fn find_path_position(grid: &[[char; WIDTH]; HEIGHT], start_x: usize, start_
         }
     }
     
-    // 見つからない場合
+    // No path found
     None
 }
 
-// 通路の位置を見つける補助関数（右下から探索、特定の位置を避ける）
+/// Finds a path position from the bottom-right of the maze, avoiding a specific position.
+/// 
+/// # Arguments
+/// * `grid` - The maze grid
+/// * `start_x` - The starting X coordinate to check
+/// * `start_y` - The starting Y coordinate to check
+/// * `avoid` - Position to avoid (usually the player position)
+/// 
+/// # Returns
+/// * `Some(Position)` - The found path position
+/// * `None` - If no path position was found
 pub fn find_path_position_from_bottom(
     grid: &[[char; WIDTH]; HEIGHT], 
     start_x: usize, 
     start_y: usize,
     avoid: &Position
 ) -> Option<Position> {
-    // 指定された位置が通路かつユーザの位置でなければ、その位置をゴールにする
+    // If the specified position is a path and not the position to avoid, return it
     if grid[start_y][start_x] == PATH && !(start_x == avoid.x && start_y == avoid.y) {
         return Some(Position::new(start_x, start_y));
     }
     
-    // 通路を探す（右下から左上に）
+    // Search for a path from bottom-right to top-left, avoiding the specified position
     for y in (0..HEIGHT).rev() {
         for x in (0..WIDTH).rev() {
             if grid[y][x] == PATH && !(x == avoid.x && y == avoid.y) {
@@ -74,6 +98,6 @@ pub fn find_path_position_from_bottom(
         }
     }
     
-    // 見つからない場合
+    // No path found
     None
 }

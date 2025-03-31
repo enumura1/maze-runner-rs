@@ -1,15 +1,60 @@
-# Rust Maze Game
+# Maze Game Library
 
-A simple text-based maze game. The maze is procedurally generated, and the player must find their way from the entrance to the exit.
+A simple Rust library for creating and playing text-based maze games. The maze is procedurally generated, and the player must find their way from the entrance to the exit.
 
 ## Features
 
 - Randomly generated mazes
 - Simple text-based UI
 - Keyboard controls for character movement
-- Reach the goal to win
+- Can be used as a library or standalone game
 
-## Controls
+## Installation
+
+Add this to your `Cargo.toml`:
+
+```toml
+[dependencies]
+maze_game = "0.1.0"
+```
+
+## Usage as a Library
+
+```rust
+use maze_game::maze::Maze;
+
+fn main() {
+    // Create a new maze
+    let mut maze = match Maze::create() {
+        Some(m) => m,
+        None => {
+            println!("Failed to generate the maze.");
+            return;
+        }
+    };
+
+    // Display the maze
+    println!("{}", maze.get_maze_as_string());
+
+    // Try to move the player
+    let moved = maze.try_move("d"); // Move right
+    
+    // Check if the game is completed
+    let state = maze.get_state();
+    if state.is_completed {
+        println!("Congratulations! You've reached the goal!");
+    }
+}
+```
+
+## Playing the Game
+
+Execute the following command to run the standalone game:
+```
+cargo run
+```
+
+### Controls
 
 - `w` or up: Move up
 - `s` or down: Move down
@@ -17,16 +62,10 @@ A simple text-based maze game. The maze is procedurally generated, and the playe
 - `d` or right: Move right
 - `q`: Quit the game
 
-## How to Run
-
-Execute the following command to run the game.
-```
-cargo run
-```
-
 ## Project Structure
 
-- `main.rs`: Main game loop and user input handling
+- `lib.rs`: Public module exports
+- `main.rs`: Standalone game loop and user input handling
 - `maze.rs`: Maze data structure and operations
 - `generator.rs`: Maze generation algorithms
 - `position.rs`: Position structure
@@ -41,3 +80,7 @@ The maze is generated using a "recursive backtracking" algorithm (also known as 
 4. Recursively repeat step 3 from the newly created passage
 
 This creates a complex maze with dead ends and branching paths.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

@@ -2,6 +2,19 @@
 name = "maze_game"
 version = "0.1.0"
 edition = "2021"
+description = "A simple text-based maze game library"
+license = "MIT"
+repository = "https://github.com/enumura1/maze_game"
+documentation = "https://docs.rs/maze_game"
+readme = "README.md"
+
+[lib]
+name = "maze_game"
+path = "src/lib.rs"
+
+[[bin]]
+name = "maze_game_bin"
+path = "src/main.rs"
 
 [dependencies]
 rand = "0.9.0"
