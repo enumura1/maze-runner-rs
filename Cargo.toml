@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 description = "A simple text-based maze game library"
 license = "MIT"
-repository = "https://github.com/enumura1/maze_game"
-documentation = "https://docs.rs/maze_game"
+repository = "https://github.com/enumura1/maze-runner-rs"
+documentation = "https://github.com/enumura1/maze-runner-rs"
 readme = "README.md"
 
 [lib]
