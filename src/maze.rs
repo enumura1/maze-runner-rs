@@ -1,6 +1,6 @@
 use crate::position::Position;
 use crate::generator::{dig_maze, find_path_position, find_path_position_from_bottom};
-use rand::rng;
+
 
 /// Width of the maze grid
 pub const WIDTH: usize = 17;
@@ -36,7 +36,7 @@ impl Maze {
     /// Creates a new maze with a player and goal.
     /// Returns None if maze generation fails.
     pub fn new() -> Option<Self> {
-        let mut rng = rng();
+        let mut rng = rand::rng();
         let mut grid = [[WALL; WIDTH]; HEIGHT];
         
         // Fill the entire maze with walls
@@ -66,11 +66,6 @@ impl Maze {
         maze.update_grid();
         
         Some(maze)
-    }
-    
-    /// Alias for new() - creates a new maze
-    pub fn create() -> Option<Self> {
-        Self::new()
     }
     
     /// Update the grid with player and goal positions
@@ -157,12 +152,6 @@ impl Maze {
         }
         
         false
-    }
-    
-    /// Try to move the player in the specified direction
-    /// Alias for move_player for better API clarity
-    pub fn try_move(&mut self, direction: &str) -> bool {
-        self.move_player(direction)
     }
     
     /// Get the current state of the maze

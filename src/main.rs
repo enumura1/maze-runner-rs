@@ -1,12 +1,12 @@
 use std::io::{self, Write};
-use maze_game::maze::Maze;
+use maze_runner_rs::maze::Maze;
 
 fn main() {
     println!("Welcome to the text-based maze game!");
     println!("Controls: w=up, s=down, a=left, d=right, q=quit");
     
     // Create a new maze with error handling
-    let mut maze = match Maze::create() {
+    let mut maze = match Maze::new() {
         Some(m) => m,
         None => {
             println!("Failed to generate the maze. Please try again.");
@@ -34,7 +34,7 @@ fn main() {
         }
         
         // Move the player
-        game_clear = maze.try_move(&direction);
+        game_clear = maze.move_player(&direction);
         
         if game_clear {
             maze.display();
