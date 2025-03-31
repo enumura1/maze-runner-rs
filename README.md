@@ -70,17 +70,6 @@ cargo run
 - `generator.rs`: Maze generation algorithms
 - `position.rs`: Position structure
 
-## Algorithm
-
-The maze is generated using a "recursive backtracking" algorithm (also known as the "digging method"). This algorithm works as follows:
-
-1. Fill the entire maze with walls
-2. Start at a specific point and mark it as a passage
-3. Choose a random direction and, if the cell two spaces away is a wall, convert it and the wall between to passages
-4. Recursively repeat step 3 from the newly created passage
-
-This creates a complex maze with dead ends and branching paths.
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
