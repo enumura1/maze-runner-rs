@@ -3,14 +3,18 @@ use rand::seq::SliceRandom;
 use crate::maze::{WALL, PATH, WIDTH, HEIGHT};
 use crate::position::Position;
 
-// 迷路生成のための穴掘り法
-pub fn dig_maze(grid: &mut [[char; WIDTH]; HEIGHT], start_x: usize, start_y: usize, rng: &mut impl Rng) {
+// 迷路生成のための穴掘り
+pub fn dig_maze(grid: &mut [[char; WIDTH]; HEIGHT],
+    start_x: usize, start_y: usize, rng: &mut impl Rng) {
+
     // 開始位置を通路にする
     grid[start_y][start_x] = PATH;
     
     // 掘る方向をランダムに決める
     let directions = [(0, -2), (2, 0), (0, 2), (-2, 0)];
+    // 可変長に変換
     let mut shuffled_directions = directions.to_vec();
+    // 配列の要素の順番をシャッフル
     shuffled_directions.shuffle(rng);
     
     // 各方向に掘っていく
@@ -31,7 +35,7 @@ pub fn dig_maze(grid: &mut [[char; WIDTH]; HEIGHT], start_x: usize, start_y: usi
 
 // 通路の位置を見つける補助関数（左上から探索）
 pub fn find_path_position(grid: &[[char; WIDTH]; HEIGHT], start_x: usize, start_y: usize) -> Option<Position> {
-    // 指定された位置が通路なら、その位置を返す
+    // （1,1）が通路なら、その位置を返す
     if grid[start_y][start_x] == PATH {
         return Some(Position::new(start_x, start_y));
     }
@@ -56,7 +60,7 @@ pub fn find_path_position_from_bottom(
     start_y: usize,
     avoid: &Position
 ) -> Option<Position> {
-    // 指定された位置が通路かつ避けるべき位置でなければ、その位置を返す
+    // 指定された位置が通路かつユーザの位置でなければ、その位置をゴールにする
     if grid[start_y][start_x] == PATH && !(start_x == avoid.x && start_y == avoid.y) {
         return Some(Position::new(start_x, start_y));
     }
@@ -70,15 +74,6 @@ pub fn find_path_position_from_bottom(
         }
     }
     
-    // 見つからない場合（最後の手段として、別の通路を探す）
-    for y in 0..HEIGHT {
-        for x in 0..WIDTH {
-            if grid[y][x] == PATH && !(x == avoid.x && y == avoid.y) {
-                return Some(Position::new(x, y));
-            }
-        }
-    }
-    
-    // それでも見つからない場合
+    // 見つからない場合
     None
 }

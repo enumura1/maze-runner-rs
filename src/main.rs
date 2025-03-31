@@ -6,8 +6,8 @@ use std::io::{self, Write};
 use maze::Maze;
 
 fn main() {
-    println!("テキストベース迷路ゲームへようこそ！");
-    println!("操作方法: w=上, s=下, a=左, d=右, q=終了");
+    println!("Welcome to the text-based maze game!");
+    println!("Instructions: w=up, s=down, a=left, d=right, q=end");
     
     // 迷路を生成（エラーハンドリング付き）
     let mut maze = match Maze::new() {
@@ -18,16 +18,16 @@ fn main() {
         }
     };
     
-    let mut game_over = false;
+    let mut game_clear = false;
     
-    while !game_over {
+    while !game_clear {
         // 迷路を表示
         maze.display();
         
-        // ユーザー入力を受け取る
         print!("移動方向を入力してください (w/a/s/d/q): ");
         io::stdout().flush().unwrap();
         
+        // ユーザー入力を受け取る
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
         let direction = input.trim().to_lowercase();
@@ -38,9 +38,9 @@ fn main() {
         }
         
         // プレイヤーを移動
-        game_over = maze.move_player(&direction);
+        game_clear = maze.move_player(&direction);
         
-        if game_over {
+        if game_clear {
             maze.display();
             println!("おめでとうございます！ゴールに到達しました！");
         }
