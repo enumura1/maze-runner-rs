@@ -1,15 +1,11 @@
-mod position;
-mod generator;
-mod maze;
-
 use std::io::{self, Write};
-use maze::Maze;
+use maze_runner_rs::maze::Maze;
 
 fn main() {
     println!("Welcome to the text-based maze game!");
-    println!("Instructions: w=up, s=down, a=left, d=right, q=end");
+    println!("Controls: w=up, s=down, a=left, d=right, q=quit");
     
-    // 迷路を生成（エラーハンドリング付き）
+    // Create a new maze with error handling
     let mut maze = match Maze::new() {
         Some(m) => m,
         None => {
@@ -21,23 +17,23 @@ fn main() {
     let mut game_clear = false;
     
     while !game_clear {
-        // 迷路を表示
+        // Display the maze
         maze.display();
         
         print!("Enter your move (w/a/s/d/q): ");
         io::stdout().flush().unwrap();
         
-        // ユーザー入力を受け取る
+        // Get user input
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
         let direction = input.trim().to_lowercase();
         
         if direction == "q" {
-            println!("Game terminated. ");
+            println!("Game terminated.");
             break;
         }
         
-        // プレイヤーを移動
+        // Move the player
         game_clear = maze.move_player(&direction);
         
         if game_clear {

@@ -1,61 +1,76 @@
 use crate::position::Position;
 use crate::generator::{dig_maze, find_path_position, find_path_position_from_bottom};
 
-// 迷路の設定
+
+/// Width of the maze grid
 pub const WIDTH: usize = 17;
-pub const HEIGHT: usize = 9;
+/// Height of the maze grid
+pub const HEIGHT: usize = 11;
+/// Character representing walls
 pub const WALL: char = '#';
+/// Character representing paths
 pub const PATH: char = ' ';
+/// Character representing the player
 pub const PLAYER: char = 'P';
+/// Character representing the goal
 pub const GOAL: char = 'G';
 
-// 迷路のゲーム状態を表す構造体
+/// A struct representing the maze game state
 pub struct Maze {
     grid: [[char; WIDTH]; HEIGHT],
     player: Position,
     goal: Position,
 }
 
+/// State of the maze game that can be queried by library users
+pub struct MazeState {
+    /// Current position of the player
+    pub player_position: Position,
+    /// Position of the goal
+    pub goal_position: Position,
+    /// Whether the player has reached the goal
+    pub is_completed: bool,
+}
+
 impl Maze {
-    // 新しい迷路を生成する
+    /// Creates a new maze with a player and goal.
+    /// Returns None if maze generation fails.
     pub fn new() -> Option<Self> {
         let mut rng = rand::rng();
         let mut grid = [[WALL; WIDTH]; HEIGHT];
         
-        // まず迷路全体を壁にする
+        // Fill the entire maze with walls
         for y in 0..HEIGHT {
             for x in 0..WIDTH {
                 grid[y][x] = WALL;
             }
         }
         
-        // 簡易的な迷路生成アルゴリズム（穴掘り法）
+        // Generate the maze using the recursive backtracking algorithm
         dig_maze(&mut grid, 1, 1, &mut rng);
         
-        // プレイヤーの初期位置を設定（左上の通路）
+        // Set the player's initial position (a path near the top-left)
         let player = match find_path_position(&grid, 1, 1) {
             Some(pos) => pos,
-            // 通路が見つからない場合
-            None => return None,
+            None => return None, // Return None if no path is found
         };
         
-        // ゴールの位置を設定（右下の通路、プレイヤーと異なる位置）
+        // Set the goal position (a path near the bottom-right, different from the player)
         let goal = match find_path_position_from_bottom(&grid, WIDTH - 2, HEIGHT - 2, &player) {
             Some(pos) => pos,
-            // 通路が見つからない場合
-            None => return None,
+            None => return None, // Return None if no suitable path is found
         };
         
-        // プレイヤーとゴールを配置
+        // Create the maze and place player and goal
         let mut maze = Maze { grid, player, goal };
         maze.update_grid();
         
         Some(maze)
     }
     
-    // グリッドにプレイヤーとゴールを配置する
+    /// Update the grid with player and goal positions
     fn update_grid(&mut self) {
-        // グリッドをリセット（プレイヤーとゴールを削除）
+        // Reset the grid (remove player and goal)
         for y in 0..HEIGHT {
             for x in 0..WIDTH {
                 if self.grid[y][x] == PLAYER || self.grid[y][x] == GOAL {
@@ -64,12 +79,12 @@ impl Maze {
             }
         }
         
-        // プレイヤーとゴールを配置
+        // Place player and goal
         self.grid[self.player.y][self.player.x] = PLAYER;
         self.grid[self.goal.y][self.goal.x] = GOAL;
     }
     
-    // 迷路を表示する
+    /// Display the maze in the console
     pub fn display(&self) {
         println!("\nMaze: (P=Player, G=Goal, #=Wall)\n");
         for y in 0..HEIGHT {
@@ -81,7 +96,23 @@ impl Maze {
         println!();
     }
     
-    // プレイヤーを移動する
+    /// Get the maze as a string
+    pub fn get_maze_as_string(&self) -> String {
+        let mut result = String::new();
+        result.push_str("Maze: (P=Player, G=Goal, #=Wall)\n\n");
+        
+        for y in 0..HEIGHT {
+            for x in 0..WIDTH {
+                result.push(self.grid[y][x]);
+            }
+            result.push('\n');
+        }
+        
+        result
+    }
+    
+    /// Move the player in the specified direction
+    /// Returns true if the goal is reached, false otherwise
     pub fn move_player(&mut self, direction: &str) -> bool {
         let mut new_x = self.player.x;
         let mut new_y = self.player.y;
@@ -110,16 +141,25 @@ impl Maze {
             _ => return false,
         }
         
-        // 壁でなければ移動
+        // Move if not a wall
         if self.grid[new_y][new_x] != WALL {
             self.player.x = new_x;
             self.player.y = new_y;
             self.update_grid();
             
-            // ゴールに到達したかチェック
+            // Check if goal is reached
             return self.player.x == self.goal.x && self.player.y == self.goal.y;
         }
         
         false
+    }
+    
+    /// Get the current state of the maze
+    pub fn get_state(&self) -> MazeState {
+        MazeState {
+            player_position: self.player,
+            goal_position: self.goal,
+            is_completed: self.player.x == self.goal.x && self.player.y == self.goal.y,
+        }
     }
 }
