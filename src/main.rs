@@ -13,7 +13,7 @@ fn main() {
     let mut maze = match Maze::new() {
         Some(m) => m,
         None => {
-            println!("迷路の生成に失敗しました。もう一度試してください。");
+            println!("Failed to generate the maze. Please try again.");
             return;
         }
     };
@@ -24,7 +24,7 @@ fn main() {
         // 迷路を表示
         maze.display();
         
-        print!("移動方向を入力してください (w/a/s/d/q): ");
+        print!("Enter your move (w/a/s/d/q): ");
         io::stdout().flush().unwrap();
         
         // ユーザー入力を受け取る
@@ -33,7 +33,7 @@ fn main() {
         let direction = input.trim().to_lowercase();
         
         if direction == "q" {
-            println!("ゲームを終了します。");
+            println!("Game terminated. ");
             break;
         }
         
@@ -42,7 +42,7 @@ fn main() {
         
         if game_clear {
             maze.display();
-            println!("おめでとうございます！ゴールに到達しました！");
+            println!("Congratulations! You've reached the goal!");
         }
     }
 }

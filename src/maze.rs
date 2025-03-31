@@ -2,7 +2,7 @@ use crate::position::Position;
 use crate::generator::{dig_maze, find_path_position, find_path_position_from_bottom};
 
 // 迷路の設定
-pub const WIDTH: usize = 15;
+pub const WIDTH: usize = 17;
 pub const HEIGHT: usize = 9;
 pub const WALL: char = '#';
 pub const PATH: char = ' ';
@@ -71,7 +71,7 @@ impl Maze {
     
     // 迷路を表示する
     pub fn display(&self) {
-        println!("\n迷路: (P=プレイヤー, G=ゴール, #=壁)\n");
+        println!("\nMaze: (P=Player, G=Goal, #=Wall)\n");
         for y in 0..HEIGHT {
             for x in 0..WIDTH {
                 print!("{}", self.grid[y][x]);
