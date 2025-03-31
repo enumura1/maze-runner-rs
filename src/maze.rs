@@ -3,7 +3,7 @@ use crate::generator::{dig_maze, find_path_position, find_path_position_from_bot
 
 // 迷路の設定
 pub const WIDTH: usize = 15;
-pub const HEIGHT: usize = 10;
+pub const HEIGHT: usize = 9;
 pub const WALL: char = '#';
 pub const PATH: char = ' ';
 pub const PLAYER: char = 'P';
