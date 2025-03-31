@@ -3,7 +3,7 @@ use crate::generator::{dig_maze, find_path_position, find_path_position_from_bot
 
 // 迷路の設定
 pub const WIDTH: usize = 15;
-pub const HEIGHT: usize = 10;
+pub const HEIGHT: usize = 9;
 pub const WALL: char = '#';
 pub const PATH: char = ' ';
 pub const PLAYER: char = 'P';
@@ -35,13 +35,15 @@ impl Maze {
         // プレイヤーの初期位置を設定（左上の通路）
         let player = match find_path_position(&grid, 1, 1) {
             Some(pos) => pos,
-            None => return None, // 通路が見つからない場合はNoneを返す
+            // 通路が見つからない場合
+            None => return None,
         };
         
         // ゴールの位置を設定（右下の通路、プレイヤーと異なる位置）
         let goal = match find_path_position_from_bottom(&grid, WIDTH - 2, HEIGHT - 2, &player) {
             Some(pos) => pos,
-            None => return None, // 適切な通路が見つからない場合はNoneを返す
+            // 通路が見つからない場合
+            None => return None,
         };
         
         // プレイヤーとゴールを配置
