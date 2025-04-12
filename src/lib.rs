@@ -18,6 +18,17 @@ mod tests {
     }
     
     #[test]
+    fn test_custom_size_maze_creation() {
+        let maze = maze::Maze::with_size(21, 15);
+        assert!(maze.is_some());
+        
+        if let Some(maze) = maze {
+            assert_eq!(maze.get_width(), 21);
+            assert_eq!(maze.get_height(), 15);
+        }
+    }
+    
+    #[test]
     fn test_player_movement() {
         if let Some(mut maze) = maze::Maze::new() {
             let directions = ["w", "a", "s", "d"];

@@ -8,6 +8,7 @@ A simple Rust library for creating and playing text-based maze games. The maze i
 - Simple text-based UI
 - Keyboard controls for character movement
 - Can be used as a library or standalone game
+- Customizable maze dimensions
 
 ## Installation
 
@@ -24,8 +25,17 @@ maze_game = "0.1.0"
 use maze_game::maze::Maze;
 
 fn main() {
-    // Create a new maze
-    let mut maze = match Maze::create() {
+    // Create a new maze with default size (17x11)
+    let mut maze = match Maze::new() {
+        Some(m) => m,
+        None => {
+            println!("Failed to generate the maze.");
+            return;
+        }
+    };
+
+    // Or create a maze with custom size (width, height)
+    let mut custom_maze = match Maze::with_size(25, 15) {
         Some(m) => m,
         None => {
             println!("Failed to generate the maze.");
@@ -37,7 +47,7 @@ fn main() {
     println!("{}", maze.get_maze_as_string());
 
     // Try to move the player, Move right
-    let moved = maze.try_move("d");
+    let moved = maze.move_player("d");
     
     // Check if the game is completed
     let state = maze.get_state();
@@ -49,10 +59,16 @@ fn main() {
 
 ## Playing the Game
 
-Execute the following command to run the standalone game:
+Execute the following command to run the standalone game with default size (17x11):
 ```
 cargo run
 ```
+
+To specify custom maze dimensions:
+```
+cargo run -- 25 15
+```
+Where 25 is the width and 15 is the height.
 
 ### Controls
 
