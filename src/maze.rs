@@ -1,11 +1,6 @@
 use crate::position::Position;
 use crate::generator::{dig_maze, find_path_position, find_path_position_from_bottom};
 
-
-/// Width of the maze grid
-pub const WIDTH: usize = 17;
-/// Height of the maze grid
-pub const HEIGHT: usize = 11;
 /// Character representing walls
 pub const WALL: char = '#';
 /// Character representing paths
@@ -17,7 +12,9 @@ pub const GOAL: char = 'G';
 
 /// A struct representing the maze game state
 pub struct Maze {
-    grid: [[char; WIDTH]; HEIGHT],
+    width: usize,
+    height: usize,
+    grid: Vec<Vec<char>>,
     player: Position,
     goal: Position,
 }
@@ -33,36 +30,47 @@ pub struct MazeState {
 }
 
 impl Maze {
-    /// Creates a new maze with a player and goal.
+    /// Creates a new maze with a player and goal with default size (17x11).
     /// Returns None if maze generation fails.
     pub fn new() -> Option<Self> {
-        let mut rng = rand::rng();
-        let mut grid = [[WALL; WIDTH]; HEIGHT];
+        Self::with_size(17, 11)
+    }
+    
+    /// Creates a new maze with a player and goal with custom size.
+    /// Returns None if maze generation fails.
+    /// 
+    /// # Arguments
+    /// * `width` - The width of the maze (must be odd and >= 5)
+    /// * `height` - The height of the maze (must be odd and >= 5)
+    pub fn with_size(width: usize, height: usize) -> Option<Self> {
+        // Ensure minimum size and odd dimensions for proper maze generation
+        let width = if width < 5 { 5 } else { width };
+        let height = if height < 5 { 5 } else { height };
         
-        // Fill the entire maze with walls
-        for y in 0..HEIGHT {
-            for x in 0..WIDTH {
-                grid[y][x] = WALL;
-            }
-        }
+        // Ensure odd dimensions (needed for the maze generation algorithm)
+        let width = if width % 2 == 0 { width + 1 } else { width };
+        let height = if height % 2 == 0 { height + 1 } else { height };
+        
+        let mut rng = rand::rng();
+        let mut grid = vec![vec![WALL; width]; height];
         
         // Generate the maze using the recursive backtracking algorithm
-        dig_maze(&mut grid, 1, 1, &mut rng);
+        dig_maze(&mut grid, width, height, 1, 1, &mut rng);
         
         // Set the player's initial position (a path near the top-left)
-        let player = match find_path_position(&grid, 1, 1) {
+        let player = match find_path_position(&grid, width, height, 1, 1) {
             Some(pos) => pos,
-            None => return None, // Return None if no path is found
+            None => return None,
         };
         
         // Set the goal position (a path near the bottom-right, different from the player)
-        let goal = match find_path_position_from_bottom(&grid, WIDTH - 2, HEIGHT - 2, &player) {
+        let goal = match find_path_position_from_bottom(&grid, width, height, width - 2, height - 2, &player) {
             Some(pos) => pos,
-            None => return None, // Return None if no suitable path is found
+            None => return None,
         };
         
         // Create the maze and place player and goal
-        let mut maze = Maze { grid, player, goal };
+        let mut maze = Maze { width, height, grid, player, goal };
         maze.update_grid();
         
         Some(maze)
@@ -71,8 +79,8 @@ impl Maze {
     /// Update the grid with player and goal positions
     fn update_grid(&mut self) {
         // Reset the grid (remove player and goal)
-        for y in 0..HEIGHT {
-            for x in 0..WIDTH {
+        for y in 0..self.height {
+            for x in 0..self.width {
                 if self.grid[y][x] == PLAYER || self.grid[y][x] == GOAL {
                     self.grid[y][x] = PATH;
                 }
@@ -87,8 +95,8 @@ impl Maze {
     /// Display the maze in the console
     pub fn display(&self) {
         println!("\nMaze: (P=Player, G=Goal, #=Wall)\n");
-        for y in 0..HEIGHT {
-            for x in 0..WIDTH {
+        for y in 0..self.height {
+            for x in 0..self.width {
                 print!("{}", self.grid[y][x]);
             }
             println!();
@@ -101,8 +109,8 @@ impl Maze {
         let mut result = String::new();
         result.push_str("Maze: (P=Player, G=Goal, #=Wall)\n\n");
         
-        for y in 0..HEIGHT {
-            for x in 0..WIDTH {
+        for y in 0..self.height {
+            for x in 0..self.width {
                 result.push(self.grid[y][x]);
             }
             result.push('\n');
@@ -124,7 +132,7 @@ impl Maze {
                 }
             }
             "s" | "down" => {
-                if new_y < HEIGHT - 1 {
+                if new_y < self.height - 1 {
                     new_y += 1;
                 }
             }
@@ -134,7 +142,7 @@ impl Maze {
                 }
             }
             "d" | "right" => {
-                if new_x < WIDTH - 1 {
+                if new_x < self.width - 1 {
                     new_x += 1;
                 }
             }
@@ -161,5 +169,15 @@ impl Maze {
             goal_position: self.goal,
             is_completed: self.player.x == self.goal.x && self.player.y == self.goal.y,
         }
+    }
+    
+    /// Get the width of the maze
+    pub fn get_width(&self) -> usize {
+        self.width
+    }
+    
+    /// Get the height of the maze
+    pub fn get_height(&self) -> usize {
+        self.height
     }
 }

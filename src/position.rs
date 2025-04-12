@@ -13,4 +13,3 @@ impl Position {
         Position { x, y }
     }
 }
-    
