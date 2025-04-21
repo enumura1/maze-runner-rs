@@ -16,4 +16,4 @@ name = "maze_runner_rs_bin"
 path = "src/main.rs"
 
 [dependencies]
-rand = "0.9.0"
+rand = "0.9.1"
